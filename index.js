@@ -1,5 +1,6 @@
 const express = require("express");
 const shortid = require("shortid");
+const cors = require('cors');
 
 const server = express();
 
@@ -18,6 +19,7 @@ let users = [
 
 // pase application/x-www-form-urlencoded
 server.use(express.json());
+server.use(cors());
 
 server.post("/api/users", (req, res) => {
   if (!((req.body.name && req.body.bio) || Array.isArray(req.body))) {
@@ -87,17 +89,13 @@ server.delete("/api/users/:id", (req, res) => {
 });
 
 server.patch("/api/users/:id", (req, res) => {
-  const usersCopy = [...users];
-  const index = usersCopy.findIndex((user) => user.id === req.params.id);
+  const index = users.findIndex((user) => user.id === req.params.id);
   try {
      if (index !== -1) {
-    usersCopy[index] = {
-      ...usersCopy[index],
-      name: req.body.name ? req.body.name : usersCopy[index].name,
-      bio: req.body.bio ? req.body.bio : usersCopy[index].bio,
-    };
-    users = usersCopy;
+    users[index].name = req.body.name ? req.body.name : users[index].name;
+    users[index].bio = req.body.bio ? req.body.bio : users[index].bio;
     res.status(200).json(users);
+    console.log(users);
   } else {
     res.status(404).json({
       message: "user not found",
