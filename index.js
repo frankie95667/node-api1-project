@@ -89,19 +89,26 @@ server.delete("/api/users/:id", (req, res) => {
 server.patch("/api/users/:id", (req, res) => {
   const usersCopy = [...users];
   const index = usersCopy.findIndex((user) => user.id === req.params.id);
-  if (index !== -1) {
+  try {
+     if (index !== -1) {
     usersCopy[index] = {
       ...usersCopy[index],
       name: req.body.name ? req.body.name : usersCopy[index].name,
       bio: req.body.bio ? req.body.bio : usersCopy[index].bio,
     };
     users = usersCopy;
-    res.status(202).json(users);
+    res.status(200).json(users);
   } else {
     res.status(404).json({
       message: "user not found",
     });
   }
+  } catch (error) {
+    res.status(500).json({
+      message: "there was an error trying to update the user"
+    })
+  }
+ 
 });
 
 server.listen(5000, () => {
